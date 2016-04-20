@@ -1,0 +1,166 @@
+{% extends "base.html" %} 
+
+
+{% block styles %} 
+{{ super() }} 
+    <link rel="stylesheet" href="/static/zTree/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="/static/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+{% endblock %}
+
+{% block scripts %} 
+{{ super() }} 
+<script type="text/javascript" src="/static/zTree/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="/static/zTree/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="/static/zTree/js/jquery.ztree.exedit.js"></script>
+    <SCRIPT type="text/javascript">
+        <!--
+        var setting = {
+            async: {
+                enable: true,
+                url:"/get_nodes",
+                autoParam:["id"]
+            },
+            view: {
+                expandSpeed:"",
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },
+            edit: {
+                enable: true,
+                // showRemoveBtn: showRemoveBtn,
+                // showRenameBtn: showRenameBtn
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pId"
+                }
+            },
+            callback: {
+                // beforeClick: beforeClick,
+                // onClick: onClick,
+                onAsyncError: onAsyncError,
+                beforeRemove: beforeRemove,
+                beforeRename: beforeRename,
+                // beforeDrag: beforeDrag,
+                // beforeEditName: beforeEditName,
+                onRemove: onRemove,
+                onRename: onRename
+            }
+        };
+
+        function beforeRemove(treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.selectNode(treeNode);
+            return confirm("确认删除 【" + treeNode.name + "】 吗？");
+        }
+
+        function onRemove(e, treeId, treeNode) {
+            console.log(" onRemove: " + treeNode.name + "[" + treeNode.id + "]");
+            $.get('admin', {'action': 'remove', "id": treeNode.id});
+
+        }
+
+        function beforeRename(treeId, treeNode, newName) {
+            if (newName.length == 0) {
+                alert("节点名称不能为空.");
+                return false;
+            }
+            return true;
+        }
+
+        function onRename(e, treeId, treeNode, isCancel) {
+            console.log(" onRename: " + treeNode.name + "[" + treeNode.id + "]");
+            $.get('admin', {'action': 'rename', "id": treeNode.id, 'value': treeNode.name});
+        }
+
+        var newCount = 1;
+        function addHoverDom(treeId, treeNode) {
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_"+treeNode.tId);
+            if (btn) btn.bind("click", function(){
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
+                return false;
+            });
+        };
+
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_"+treeNode.tId).unbind().remove();
+        };
+
+        function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+            console.log("onAsyncError");
+            console.log(textStatus);
+            console.log(errorThrown);
+        }
+
+        function beforeClick(treeId, treeNode) {
+            var check = (treeNode && !treeNode.isParent);
+            if (!check) alert("只能选择城市...");
+            return check;
+        }
+        
+        function onClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+            nodes = zTree.getSelectedNodes();
+            
+            $("#cate").attr("value", nodes[0].name);
+            $("#cate_id").attr("value", nodes[0].id);
+
+            // hideMenu();
+        }
+
+        function showRemoveBtn(treeId, treeNode) {
+            return !treeNode.isFirstNode;
+        }
+        function showRenameBtn(treeId, treeNode) {
+            return !treeNode.isLastNode;
+        }
+        function showMenu() {
+            var cateObj = $("#cate");
+            var cityOffset = $("#cate").offset();
+            $("#menuContent").css({left:cityOffset.left + "px", top:cityOffset.top + cateObj.outerHeight() + "px"}).slideDown("fast");
+
+            $("body").bind("mousedown", onBodyDown);
+        }
+
+        function hideMenu() {
+            $("#menuContent").fadeOut("fast");
+            $("body").unbind("mousedown", onBodyDown);
+        }
+
+        function onBodyDown(event) {
+            if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+                hideMenu();
+            }
+        }
+
+        $(document).ready(function(){
+            $.fn.zTree.init($("#treeDemo"), setting);
+            $("#cate").focus(showMenu);
+        });
+        //-->
+    </SCRIPT>
+{% endblock %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>TEST</h1> 
+    </div> 
+    <div class="zTreeDemoBackground left">
+        <ul id="treeDemo" class="ztree"></ul>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="json_file" />
+    <input type="submit" />
+    </form>
+</div> 
+{% endblock %}

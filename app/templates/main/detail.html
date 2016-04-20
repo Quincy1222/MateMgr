@@ -1,0 +1,27 @@
+{% extends "base.html" %} 
+
+{% block title %}物料详细信息{% endblock %} 
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>物料详细信息</h1> 
+    </div> 
+
+    {% if item: %}
+    <table class="table table-condensed table-responsive">
+    <tr><th>代码</th><td>{{ item.name }}</td></tr>
+    <tr><th>名称</th><td>{{ item.code }}</td></tr>
+    <tr><th>规格</th><td>{{ item.spec }}</td></tr>
+    <tr><th>类别</th><td>{{ item.cate.title }}</td></tr>
+    <tr><th>备注</th><td>{{ item.notes or '-'}}</td></tr>
+    {% if current_user.can(4) %} 
+    <tr><th>操作</th><td><a href="/edit?id={{ item.id }}"> 修改 </a>&nbsp;<a href="/delete?id={{ item.id }}"> 删除 </a></td></tr>
+    {% endif %}
+    </table>
+
+    {% else %}
+    {% if keyword: %}<div>没有相关内容</div>{% endif %}
+    {% endif %}
+</div> 
+{% endblock %}

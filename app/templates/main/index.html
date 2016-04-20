@@ -1,0 +1,29 @@
+{% extends "base.html" %} 
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+
+{% block scripts %} 
+{{ super() }} 
+{% endblock %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>代码查询</h1> 
+    </div> 
+    {{ wtf.quick_form(form) }}
+
+    {% if items: %}
+    <table class="table table-condensed table-responsive">
+    <tr><th>代码</th><th>名称</th><th>规格</th><th>状态</th></tr>
+    {% for item in items: %}
+    <tr><td><a href="/detail?id={{ item.id }}">{{ item.code }}</a></td><td>{{ item.name }}</td><td>{{ item.spec }}</td><td>{{ item.prop.title }}</td></tr>
+    {% endfor %}
+    </table>
+
+    {% else %}
+    {% if keyword: %}<div>没有相关内容</div>{% endif %}
+    {% endif %}
+</div> 
+{% endblock %}

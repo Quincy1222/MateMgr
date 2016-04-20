@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block scripts %} 
+{{ super() }} 
+<link rel="stylesheet" href="/static/zTree/css/demo.css" type="text/css">
+<link rel="stylesheet" href="/static/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+
+<script type="text/javascript" src="/static/zTree/js/jquery.ztree.core.js"></script>
+  
+<script type="text/javascript">
+<!--
+var setting = {
+    view: {
+        dblClickExpand: false
+    },
+    data: {
+        simpleData: {
+            enable: true
+        }
+    },
+    callback: {
+        beforeClick: beforeClick,
+        onClick: onClick
+    }
+};
+
+var zNodes =[
+    {id:1, pId:0, name:"成品"},
+    {id:2, pId:0, name:"半成品"},
+    {id:3, pId:0, name:"材料"},
+    {id:30, pId:3, name:"标准件"},
+    {id:31, pId:3, name:"包装材料"},
+    {id:32, pId:3, name:"插座"},
+    {id:33, pId:3, name:"工程物料"},
+    {id:330, pId:33, name:"箱柜类"},
+    {id:331, pId:33, name:"强电类"},
+    {id:332, pId:33, name:"弱电类"},
+    {id:3320, pId:332, name:"网络通讯"},
+    {id:3321, pId:332, name:"监控视频"},
+    {id:4, pId:0, name:"原料"},
+    {id:40, pId:4, name:"板材"},
+    {id:41, pId:4, name:"管材包装"},
+    {id:42, pId:4, name:"管材"},
+    {id:43, pId:4, name:"线材"},
+    {id:44, pId:4, name:"电缆"},
+    {id:45, pId:4, name:"板材"},
+    {id:5, pId:0, name:"辅料"},
+    {id:50, pId:5, name:"包装类"},
+    {id:51, pId:5, name:"化工类"},
+    {id:52, pId:5, name:"胶类"},
+    {id:53, pId:5, name:"其他辅料"},
+    {id:6, pId:0, name:"商务外购直采"},
+    {id:60, pId:6, name:"计算机系统"},
+    {id:600, pId:60, name:"PC/ 服务器"},
+    {id:601, pId:60, name:"网络设备"},
+    {id:602, pId:60, name:"存储设备"},
+    {id:603, pId:60, name:"计算机外设"},
+    {id:61, pId:6, name:"家电家具"},
+    {id:62, pId:6, name:"采制化设备"},
+    {id:620, pId:62, name:"采样设备"},
+    {id:621, pId:62, name:"制样设备"},
+    {id:622, pId:62, name:"化验设备"},
+    {id:623, pId:62, name:"数值化煤场设备"},
+    {id:7, pId:0, name:"服务类"},
+    {id:8, pId:0, name:"软件类"},
+    {id:9, pId:0, name:"虚拟包"},
+ ];
+
+function beforeClick(treeId, treeNode) {
+    var check = (treeNode && !treeNode.isParent);
+    if (!check) alert("只能选择城市...");
+    return check;
+}
+
+function onClick(e, treeId, treeNode) {
+    var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+    nodes = zTree.getSelectedNodes(),
+    v = "";
+    nodes.sort(function compare(a,b){return a.id-b.id;});
+    for (var i=0, l=nodes.length; i<l; i++) {
+        v += nodes[i].name + ",";
+    }
+    if (v.length > 0 ) v = v.substring(0, v.length-1);
+    var cityObj = $("#category");
+    cityObj.attr("value", v);
+}
+
+function showMenu() {
+    var cityObj = $("#category");
+    var cityOffset = $("#category").offset();
+    $("#menuContent").css({left:cityOffset.left + "px", top:cityOffset.top + cityObj.outerHeight() + "px"}).slideDown("fast");
+
+    $("body").bind("mousedown", onBodyDown);
+}
+function hideMenu() {
+    $("#menuContent").fadeOut("fast");
+    $("body").unbind("mousedown", onBodyDown);
+}
+function onBodyDown(event) {
+    if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+        hideMenu();
+    }
+}
+
+$(document).ready(function(){
+    $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    
+    $('#form1').submit(function() {
+        if(($('#name').val() == '') || ($('#category').val() == '') || ($('#spec').val() == '')) {
+            alert('"名称"，"类别"，"规格"都不能为空');
+            
+            return false;
+        }
+    });
+});
+//-->
+
+</script> 
+{% endblock %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>申请代码</h1> 
+    </div> 
+</div> 
+<form method="POST" id="form1">
+<table class="table table-condensed table-responsive">
+<tr><th><label for="name">名称</label></th><td><input name="name" id="name" value="{{name or ''}}"/></td></tr>
+<tr><th><label for="category">类别</label></th><td><input name="category" id="category" readonly  value="{{cate or ''}}"/>&nbsp;<a id="menuBtn" href="#" onclick="showMenu(); return false;">选择</a></td></tr>
+<tr><th><label for="spec">规格</label></th><td><input name="spec" id="spec" value="{{spec or ''}}"/></td></tr>
+<tr><th><label for="remark">备注</label></th><td><input name="remark" id="remark" value="{{remark or ''}}"/></td></tr>
+<tr><td colspan="2"><input type="submit" value="提交"/></td></tr>
+</table>
+</form>
+
+<div id="menuContent" class="menuContent" style="display:none; position: absolute;">
+	<ul id="treeDemo" class="ztree" style="margin-top:0; width:160px;"></ul>
+</div>
+[ <a id="expandAllBtn" href="#" onclick="return false;">全部展开</a> ] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ <a id="asyncAllBtn" href="#" onclick="return false;">后台自动全部加载</a> ]<br/><br/>
+[ <a id="resetBtn" href="#" onclick="return false;">Reset zTree</a> ]<br/><br/>
+<p class="highlight_red" id="demoMsg"></p>
+
+                
+{% endblock %}

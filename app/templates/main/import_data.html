@@ -1,0 +1,14 @@
+{% extends "base.html" %} 
+
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>导入物料</h1> 
+    </div> 
+    <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="excel_file" />
+    <input type="submit" />
+    </form>
+</div> 
+{% endblock %}

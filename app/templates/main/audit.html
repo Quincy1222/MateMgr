@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>待审核代码</h1> 
+    </div> 
+</div>
+
+    {% if items: %}
+    <table class="table table-condensed table-responsive">
+    <tr><th>代码</th><th>名称</th><th>规格</th><th>类别</th><th>备注</th><th>已校核</th></tr>
+    {% for item in items: %}
+    <tr><td><a href="/detail/{{ item[0] }}">{{ item[1] }}</a></td><td>{{ item[2] }}</a></td><td>{{ item[3] }}</td><td>{{ item[4] or '未指定'}}</td><td>{{ item[5] or '' }}</td><td>{{ item[6] }}</td></tr>
+    {% endfor %}
+    </table>
+    {% else %}
+    {% if keyword: %}<div>没有相关内容</div>{% endif %}
+    {% endif %}
+{% endblock %}

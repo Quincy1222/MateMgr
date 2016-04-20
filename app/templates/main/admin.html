@@ -1,0 +1,138 @@
+{% extends "base.html" %} 
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %} 
+{{ super() }} 
+    <link rel="stylesheet" href="/static/zTree/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="/static/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+{% endblock %}
+
+{% block scripts %} 
+{{ super() }} 
+<script type="text/javascript" src="/static/zTree/js/jquery.ztree.core.js"></script>
+    <SCRIPT type="text/javascript">
+        <!--
+        var setting = {
+            view: {
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },
+            edit: {
+                enable: true,
+                showRemoveBtn: showRemoveBtn,
+                showRenameBtn: showRenameBtn
+
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pId"
+                }
+            },
+            async: {
+                enable: true,
+                url:"/get_nodes",
+                autoParam:["id"]
+            },
+            callback: {
+                beforeClick: beforeClick,
+                onClick: onClick,
+                onAsyncError: onAsyncError,
+                beforeRemove: beforeRemove,
+                beforeRename: beforeRename
+            }
+        };
+
+        function beforeRemove(treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.selectNode(treeNode);
+            return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
+        }       
+        function beforeRename(treeId, treeNode, newName) {
+            if (newName.length == 0) {
+                alert("节点名称不能为空.");
+                return false;
+            }
+            return true;
+        }
+
+        var newCount = 1;
+        function addHoverDom(treeId, treeNode) {
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_"+treeNode.tId);
+            if (btn) btn.bind("click", function(){
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
+                return false;
+            });
+        };
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_"+treeNode.tId).unbind().remove();
+        };
+
+        function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+            console.log("onAsyncError");
+        }
+
+        function beforeClick(treeId, treeNode) {
+            var check = (treeNode && !treeNode.isParent);
+            if (!check) alert("只能选择城市...");
+            return check;
+        }
+        
+        function onClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+            nodes = zTree.getSelectedNodes();
+            
+            $("#cate").attr("value", nodes[0].name);
+            $("#cate_id").attr("value", nodes[0].id);
+
+            hideMenu();
+        }
+
+        function showMenu() {
+            var cateObj = $("#cate");
+            var cityOffset = $("#cate").offset();
+            $("#menuContent").css({left:cityOffset.left + "px", top:cityOffset.top + cateObj.outerHeight() + "px"}).slideDown("fast");
+
+            $("body").bind("mousedown", onBodyDown);
+        }
+
+        function hideMenu() {
+            $("#menuContent").fadeOut("fast");
+            $("body").unbind("mousedown", onBodyDown);
+        }
+
+        function onBodyDown(event) {
+            if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+                hideMenu();
+            }
+        }
+
+        $(document).ready(function(){
+            $.fn.zTree.init($("#treeDemo"), setting);
+            $("#cate").focus(showMenu);
+        });
+        //-->
+    </SCRIPT>
+{% endblock %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>修改物料信息</h1> 
+    </div> 
+    {{ wtf.quick_form(form) }}
+    
+    <div id="menuContent" class="menuContent" style="display:none; position: absolute;">
+        <ul id="treeDemo" class="ztree" style="margin-top:0; width:160px;"></ul>
+    </div>
+</div> 
+{% endblock %}

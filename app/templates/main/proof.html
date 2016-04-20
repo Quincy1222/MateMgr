@@ -1,0 +1,79 @@
+{% extends "base.html" %} 
+
+{% block scripts %} 
+{{ super() }} 
+<script type="text/javascript">  
+$('document').ready(function() {
+
+    var code = $('#origCode').text();
+    var name = $('#origName').text();
+    var spec = $('#origSpec').text();
+    var unit = $('#origUnit').text();
+    var remark = $('#origRemark').text();
+    
+    $('#code').attr("value", code);
+    $('#name').attr("value", name);
+    $('#spec').attr("value", spec.replace(",", "，").replace("(", "，").replace(")", "，").replace("（", "，").replace("）", "，"));
+    $('#remark').attr("value", remark);
+    $("#unit").val(unit);
+    
+    if($("#unit").val() == null) {
+        $("#unit").val('件');
+    }
+    
+    $.getJSON("suggest?word="+name, function(result, status){
+        var html = "";
+        
+        if(status != 'success') {
+            return;
+        }
+        
+        $.each(result['list'], function(i, txt){
+            html += '<span class="suggestWord label label-info">' + txt + '</span> &nbsp;';
+        });
+        
+        $("#suggest").html(html);
+        $('.suggestWord').on('click', function(){
+            var name = $('#origName').text().replace('（', '(').replace('）', ')');
+            var index = name.indexOf("(");
+            if(index > 0) {
+                name = name.substr(index).replace("(", " ").replace(")", " ");
+                
+                if($('#origRemark').text() != '') {
+                    name = $('#origRemark').text() + '，' + name;
+                }
+                
+                $('#remark').attr("value", name);
+            }
+            $('#name').attr("value", $(this).html());
+        });
+    });
+});
+
+</script> 
+{% endblock %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>旧代码整理</h1> 
+    </div>
+<form id="form1" method="POST">
+<table class="table table-condensed table-responsive">
+<tr><th>&nbsp;</th><th class="warning">原始信息</th><th class="success">修订信息</th><th width="45%">建议</th></tr>
+<tr><td>代码</td><td class="warning" id="origCode">{{item[1]}}</td><td class="success"><input name="code" id="code" readonly="yes" autocomplete="off"/></td><td>&nbsp;</td></tr>
+<tr><td>名称</td><td class="warning" id="origName">{{item[2]}}</td><td class="success"><input name="name" id="name"/></td><td id="suggest">&nbsp;</td></tr>
+<tr><td>规格</td><td class="warning" id="origSpec">{{item[3]}}</td><td class="success"><input name="spec" id="spec"/></td><td>&nbsp;</td></tr>
+<tr><td>单位</td><td class="warning" id="origUnit">{{item[4]}}</td><td class="success">
+<select name="unit" id="unit">
+  <option value="件">件</option>
+  <option value="套">套</option>
+  <option value="米">米</option>
+  <option value="根">根</option>
+</select></td><td>&nbsp;</td></tr>
+<tr><td>备注</td><td class="warning" id="origRemark">{{item[5]}}</td><td class="success"><input name="remark" id="remark"/></td><td>&nbsp;</td></tr>
+<tr><td colspan="4" class="text-center"><input type="hidden" value="{{item[0]}}"/> <button type="submit" class="btn btn-primary btn-lg btn-block">提交</button></td></tr>
+</table>
+</form>
+</div> 
+{% endblock %}
