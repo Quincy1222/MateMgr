@@ -3,13 +3,13 @@
 
 # app/__init__.py
 
-from flask import Flask, render_template
+from flask import Flask
 from flask.ext.bootstrap import Bootstrap, WebCDN
 from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
 # from flask.ext.mail import Mail
 # from flask.ext.moment import Moment
-from config import config
+from my_config import config
 
 bootstrap = Bootstrap()
 # mail = Mail()
@@ -31,7 +31,7 @@ def create_app(config_name):
 
     app.extensions['bootstrap']['cdns']['bootstrap'] = cdn_bootstrap
     app.extensions['bootstrap']['cdns']['jquery'] = cdn_jquery
-    
+
     # mail.init_app(app)
     # moment.init_app(app)
     db.init_app(app)
