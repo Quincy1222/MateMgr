@@ -26,8 +26,8 @@ class Category(db.Model):
 
     materials = db.relationship('Material', backref='cate')
     parent_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    parent = db.relationship('Category', 
-                             uselist=False, 
+    parent = db.relationship('Category',
+                             uselist=False,
                              remote_side=[id], backref="children")
 
     def __repr__(self):
@@ -41,13 +41,20 @@ class Category(db.Model):
 
         items = json.load(json_file)
         for item in items:
-            c = Category(title=item['title'])
-
-            if item.has_key('parent'):
-                c.parent = Category.query.filter_by(title=item['parent']).first()
+            c = Category(title=item['title'].encode('utf-8'))
 
             if item.has_key('prefix'):
                 c.prefix = item['prefix']
+
+            if item.has_key('parent') and item['parent'] != '':
+                    c.parent = Category.query.filter_by(title=item['parent']).first()
+            elif c.prefix:
+                for i in range(len(c.prefix), 3, -1):
+                    p = Category.query.filter_by(prefix=c.prefix[:i]).first()
+                    print c.prefix[:i], p
+                    if p:
+                        c.parent = p
+                        break
 
             if item.has_key('notes'):
                 c.notes = item['notes']
@@ -76,10 +83,10 @@ class Property(db.Model):
     @staticmethod
     def insert_items():
         items = {
-            u'新建立': u'新建，未审核', 
-            u'已修改': u'已修改，未审核', 
-            u'已审核': u'已审核', 
-            u'已作废': u'已废止', 
+            u'新建立': u'新建，未审核',
+            u'已修改': u'已修改，未审核',
+            u'已审核': u'已审核',
+            u'已作废': u'已废止',
         }
 
         for i in items:
@@ -88,7 +95,7 @@ class Property(db.Model):
                 item = Property(title=i)
             item.notes = items[i][0]
             db.session.add(item)
-            
+
         db.session.commit()
 
 class Material(db.Model):
@@ -99,10 +106,10 @@ class Material(db.Model):
     name = db.Column(db.String(64))
     spec = db.Column(db.String(128))
     notes = db.Column(db.String(128))
-    
+
     cate_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     prop_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
-    
+
     def __repr__(self):
         return '<Role %r>' % self.name
 
@@ -168,7 +175,7 @@ class Material(db.Model):
 
 class Role(db.Model):
     __tablename__ = 'roles'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     default = db.Column(db.Boolean, default=False, index=True)
@@ -197,7 +204,7 @@ class Role(db.Model):
             role.permissions = roles[r][0]
             role.default = roles[r][1]
             db.session.add(role)
-            
+
         db.session.commit()
 
 class User(UserMixin, db.Model):
@@ -207,7 +214,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -221,26 +228,26 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
-        
-    def can(self, permissions): 
-        return self.role is not None and (self.role.permissions & permissions) == permissions 
- 
-    def is_administrator(self): 
-        return self.can(Permission.ADMIN) 
- 
-class AnonymousUser(AnonymousUserMixin): 
-    def can(self, permissions): 
+
+    def can(self, permissions):
+        return self.role is not None and (self.role.permissions & permissions) == permissions
+
+    def is_administrator(self):
+        return self.can(Permission.ADMIN)
+
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permissions):
         return  (permissions == Permission.QUERY)
- 
-    def is_administrator(self): 
-        return False 
- 
+
+    def is_administrator(self):
+        return False
+
 login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-    
+
 class Product(db.Model):
     __tablename__ = 'products'
 
