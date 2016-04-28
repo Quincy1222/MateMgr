@@ -35,8 +35,7 @@ class Category(db.Model):
 
     @staticmethod
     def load_json(json_file):
-        # "title": "xxxx", "parent": "父级". "prefix": "C_"
-        #
+        # json format: {"title": "xxxx", "parent": "父级". "prefix": "C_"}
         import json
 
         items = json.load(json_file)

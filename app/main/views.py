@@ -11,6 +11,7 @@ from flask import request, render_template, session, redirect, url_for, current_
 from flask.ext.login import login_required
 from werkzeug import secure_filename
 from sqlalchemy import or_
+from jinja2 import contextfilter
 
 from . import main
 from .forms import SearchForm, MateInfoForm
@@ -23,6 +24,22 @@ ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@contextfilter
+def getCatePath(env, category):
+    parents_title = [category.title]
+    parent = category.parent
+    while parent:
+        parents_title = [parent.title] + parents_title
+
+        parent = parent.parent
+
+    result = '/ '.join(t for t in parents_title)
+    #if env.autoescape:
+    #    result = Markup(result)
+    return '/ ' + result
+
+main.add_app_template_filter(getCatePath)
 
 # 主页：搜索
 # 可匿名访问
@@ -58,6 +75,20 @@ def detail():
         return redirect(url_for('.index'))
         
     mate = Material.query.filter_by(id=id).first()
+    print mate.cate, mate.code
+    if not mate.cate:
+        for i in range(len(mate.code) - 1, 3, -1):
+            code_prefix = mate.code[:i]
+            print code_prefix
+            cate = Category.query.filter_by(prefix=code_prefix).first()
+
+            if cate:
+                mate.cate = cate
+
+                db.session.add(mate)
+                db.session.commit()
+
+                break
 
     return render_template('main/detail.html', item=mate)
 
