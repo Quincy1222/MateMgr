@@ -47,11 +47,11 @@ class Category(db.Model):
                 c.prefix = item['prefix']
 
             if item.has_key('parent') and item['parent'] != '':
-                    c.parent = Category.query.filter_by(title=item['parent']).first()
+                c.parent = Category.query.filter_by(title=item['parent']).first()
             elif c.prefix:
                 for i in range(len(c.prefix), 3, -1):
                     p = Category.query.filter_by(prefix=c.prefix[:i]).first()
-                    print c.prefix[:i], p
+                    # print c.prefix[:i], p
                     if p:
                         c.parent = p
                         break
@@ -60,6 +60,7 @@ class Category(db.Model):
                 c.notes = item['notes']
 
             db.session.add(c)
+            # 每新增1项，立即提交，因为该项后续可能会成为其他项目的父项
             db.session.commit()
 
 class Property(db.Model):
