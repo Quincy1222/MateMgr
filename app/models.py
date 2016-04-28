@@ -41,13 +41,20 @@ class Category(db.Model):
 
         items = json.load(json_file)
         for item in items:
-            c = Category(title=item['title'])
-
-            if item.has_key('parent'):
-                c.parent = Category.query.filter_by(title=item['parent']).first()
+            c = Category(title=item['title'].encode('utf-8'))
 
             if item.has_key('prefix'):
                 c.prefix = item['prefix']
+
+            if item.has_key('parent') and item['parent'] != '':
+                    c.parent = Category.query.filter_by(title=item['parent']).first()
+            elif c.prefix:
+                for i in range(len(c.prefix), 3, -1):
+                    p = Category.query.filter_by(prefix=c.prefix[:i]).first()
+                    print c.prefix[:i], p
+                    if p:
+                        c.parent = p
+                        break
 
             if item.has_key('notes'):
                 c.notes = item['notes']
