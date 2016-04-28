@@ -227,6 +227,14 @@ class User(UserMixin, db.Model):
  
     def is_administrator(self): 
         return self.can(Permission.ADMIN) 
+
+    @staticmethod
+    def init_users():
+        role = Role.query.filter_by(permissions=0xff).first()
+        u = User(email='admin@domin.com', username='Admin', password='adminn', role=role)
+
+        db.session.add(u)
+        db.session.commit()
  
 class AnonymousUser(AnonymousUserMixin): 
     def can(self, permissions): 
