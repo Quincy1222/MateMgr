@@ -155,12 +155,14 @@
     <div class="page-header"> 
         <h1>TEST</h1> 
     </div> 
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="json_file" />
+        <input type="submit" />
+    </form>
+
     <div class="zTreeDemoBackground left">
         <ul id="treeDemo" class="ztree"></ul>
     </div>
-    <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="json_file" />
-    <input type="submit" />
-    </form>
+
 </div> 
 {% endblock %}

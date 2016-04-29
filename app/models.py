@@ -98,6 +98,18 @@ class Property(db.Model):
             
         db.session.commit()
 
+class MaterialAttach(db.Model):
+    __tablename__ = 'material_attachs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    attach_type  = db.Column(db.String(32))
+    filepath = db.Column(db.String(128))
+    
+    mate_id = db.Column(db.Integer, db.ForeignKey('materials.id'))
+    
+    def __repr__(self):
+        return '<Attach %r>' % self.id
+
 class Material(db.Model):
     __tablename__ = 'materials'
 
@@ -112,15 +124,13 @@ class Material(db.Model):
     
     def __repr__(self):
         return '<Role %r>' % self.name
-
+    '''
     @staticmethod
     def importFromCSV(csvFile):
         import csv
         with open(csvFile) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                # print(row['id'])
-
                 m = Material(code=row['code'].decode('utf-8'),
                             name=row['name'].decode('utf-8'),
                             spec=row['spec'].decode('utf-8'),
@@ -131,6 +141,7 @@ class Material(db.Model):
 
             # commit
             db.session.commit()
+    '''
 
     @staticmethod
     def importFromExcel(excelFilename):
@@ -230,6 +241,7 @@ class User(UserMixin, db.Model):
         return '<User %r>' % self.username
         
     def can(self, permissions): 
+        print 'Req permissions:', permissions
         return self.role is not None and (self.role.permissions & permissions) == permissions 
  
     def is_administrator(self): 
@@ -245,6 +257,7 @@ class User(UserMixin, db.Model):
  
 class AnonymousUser(AnonymousUserMixin): 
     def can(self, permissions): 
+        print 'AnonymousUser Req permissions:', permissions
         return  (permissions == Permission.QUERY)
  
     def is_administrator(self): 

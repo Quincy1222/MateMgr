@@ -60,3 +60,9 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# tmpfile
+upload/
+migrations/
+venv/
+my_config.py

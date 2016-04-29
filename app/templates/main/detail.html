@@ -8,16 +8,22 @@
         <h1>物料详细信息</h1> 
     </div> 
 
-    {% if item: %}
+    {% if item: %}<a href="/edit?id={{ item.id }}"> 修改 </a>&nbsp;
+    <a href="/delete?id={{ item.id }}"> 删除 </a>&nbsp;
     <table class="table table-condensed table-responsive">
     <tr><th>代码</th><td>{{ item.name }}</td></tr>
     <tr><th>名称</th><td>{{ item.code }}</td></tr>
     <tr><th>规格</th><td>{{ item.spec }}</td></tr>
     <tr><th>类别</th><td>{{ item.cate|getCatePath }}</td></tr>
     <tr><th>备注</th><td>{{ item.notes or '-'}}</td></tr>
-    {% if current_user.can(4) %} 
-    <tr><th>操作</th><td><a href="/edit?id={{ item.id }}"> 修改 </a>&nbsp;<a href="/delete?id={{ item.id }}"> 删除 </a></td></tr>
-    {% endif %}
+    <tr><th>附件</th><td>
+    <a href="/attach?id={{ item.id }}"> 添加附件 </a>
+    <ul>
+    {% for a in attach: %}
+        <li><a href="{{url_for('main.view_attach', mid=item.id, aid=a.id)}}">{{ a.attach_type }}</a></li>
+    {% endfor %}
+    </ul>
+    </td></tr>
     </table>
 
     {% else %}
