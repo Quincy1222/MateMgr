@@ -124,24 +124,6 @@ class Material(db.Model):
     
     def __repr__(self):
         return '<Role %r>' % self.name
-    '''
-    @staticmethod
-    def importFromCSV(csvFile):
-        import csv
-        with open(csvFile) as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                m = Material(code=row['code'].decode('utf-8'),
-                            name=row['name'].decode('utf-8'),
-                            spec=row['spec'].decode('utf-8'),
-                            notes=row['remark'].decode('utf-8'),
-                            cate_id=Category.query.first().id,
-                            prop_id=Property.query.first().id)
-                db.session.add(m)
-
-            # commit
-            db.session.commit()
-    '''
 
     @staticmethod
     def importFromExcel(excelFilename):

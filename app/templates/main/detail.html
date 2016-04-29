@@ -20,7 +20,7 @@
     <a href="/attach?id={{ item.id }}"> 添加附件 </a>
     <ul>
     {% for a in attach: %}
-        <li><a href="{{url_for('main.view_attach', mid=item.id, aid=a.id)}}">{{ a.attach_type }}</a></li>
+        <li>{{ a.attach_type }} &nbsp; <a href="{{url_for('main.view_attach', mid=item.id, aid=a.id)}}">{{ a.filepath }}</a></li>
     {% endfor %}
     </ul>
     </td></tr>

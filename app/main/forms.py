@@ -6,7 +6,7 @@
 from flask.ext.wtf import Form 
 from wtforms import StringField, SubmitField, HiddenField, RadioField, FileField, SelectField
 from wtforms.validators import Required, Length 
- 
+
 class SearchForm(Form): 
     option  = RadioField(u'搜索选项', 
         choices=[('code', u'代码'), ('name', u'名称'), ('spec', u'规格'), ('notes', u'备注')],
@@ -33,6 +33,6 @@ class MateAttachForm(Form):
     attach_type = SelectField(u'附件类型', 
         choices=[(u'选型资料', u'选型资料'), (u'图纸', u'图纸'), (u'说明书', u'说明书')],
         validators=[Required()])
-    file = FileField(u'附件') # , [validators.regexp(u'^[^/\\]\.jpg$')]
+    file = FileField(u'附件')
 
     submit = SubmitField(u'提交')

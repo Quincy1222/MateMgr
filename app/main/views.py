@@ -7,7 +7,7 @@
 import os.path
 import json
 
-from flask import request, render_template, session, redirect, url_for, current_app, flash, jsonify
+from flask import request, render_template, session, redirect, url_for, current_app, flash, send_from_directory
 from flask.ext.login import login_required
 from werkzeug import secure_filename
 from sqlalchemy import or_
@@ -22,8 +22,8 @@ from ..decorators import permission_required
 
 ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+def allowed_file(filename, allow_ext):
+    return '.' in filename and filename.rsplit('.', 1)[1] in allow_ext
 
 @contextfilter
 def getCatePath(env, category):
@@ -107,6 +107,10 @@ def view_attach():
 
     return render_template('main/view_attach.html', src=attach.filepath)
 
+@main.route('/attathment/<path:filename>')
+def send_attach(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
 # 删除物料
 # 管理权限
 @main.route('/delete')
@@ -184,6 +188,11 @@ def attach():
         _type = form.attach_type.data
         file = form.file.data
 
+        if not allowed_file(file.filename, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg']):
+            flash(u'不允许上传此类文件')
+
+            return render_template('main/attach.html', form=form, mate=mate)
+
         safe_filename = secure_filename(file.filename)
         filename = os.path.join(current_app.config['UPLOAD_FOLDER'], safe_filename)
             
@@ -229,7 +238,7 @@ def import_data():
     if request.method == 'POST':
         file = request.files['excel_file']
 
-        if file and allowed_file(file.filename):
+        if file and allowed_file(file.filename, ALLOWED_EXTENSIONS):
             filename = os.path.join(
                 current_app.config['TMP_FOLDER'], 
                 secure_filename(file.filename))
