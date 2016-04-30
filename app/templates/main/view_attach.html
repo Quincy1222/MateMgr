@@ -1,0 +1,18 @@
+{% extends "base.html" %} 
+
+{% block title %}物料详细信息{% endblock %} 
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>查看物料附件</h1> 
+    </div> 
+
+    {% if src %}
+    <embed src="{{ '/attathment/' + src }}" width="80%" height="600" />
+    {% else %}
+    <p>错误</p>
+    {% endif %}
+
+</div> 
+{% endblock %}

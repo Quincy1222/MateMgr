@@ -1,0 +1,20 @@
+{% extends "base.html" %} 
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+
+{% block scripts %} 
+{{ super() }} 
+{% endblock %}
+
+{% block page_content %} 
+<div class="container"> 
+    <div class="page-header"> 
+        <h1>添加附件</h1> 
+    </div> 
+
+    为 {{ mate.name }} 添加附件 <br/>
+    {{ wtf.quick_form(form) }}
+
+</div> 
+{% endblock %}
