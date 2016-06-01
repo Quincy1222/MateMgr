@@ -17,9 +17,9 @@
 
     {% if items: %}
         <table class="table table-condensed table-responsive">
-        <tr><th>代码</th><th>名称</th><th>规格</th></tr>
+        <tr><th>代码</th><th>类别</th><th>名称</th><th>规格</th></tr>
         {% for item in items: %}
-        <tr><td><a href="/detail?id={{ item.id }}">{{ item.code }}</a></td><td>{{ item.name }}</td><td>{{ item.spec }}</td></tr>
+        <tr><td><a href="/detail?id={{ item.id }}">{{ item.code }}</a></td><td>{{ item.category.title or '-'}}</td><td>{{ item.name }}</td><td>{{ item.spec }}</td></tr>
         {% endfor %}
         </table>
     {% endif %}

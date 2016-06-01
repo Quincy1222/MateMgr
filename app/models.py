@@ -165,6 +165,31 @@ class Material(db.Model):
 
             db.session.commit()
         return (True, count)
+    
+    @property
+    def category(self):
+        if not self.cate:
+            for i in range(len(self.code) - 1, 3, -1):
+                code_prefix = self.code[:i]
+                cate = Category.query.filter_by(prefix=code_prefix).first()
+
+                if cate:
+                    self.cate = cate
+
+                    db.session.add(self)
+                    db.session.commit()
+
+                    break
+
+        return self.cate
+
+    @category.setter
+    def category(self, cate_title):
+        c = Category.query.filter_by(title=cate_title).first()
+
+        if c:
+            self.cate.id = c.id
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -256,4 +281,12 @@ class Product(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    notes = db.Column(db.String(128))
+
+class SystemInfo(db.Model):
+    __tablename__ = 'system_info'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64))
+    value = db.Column(db.String(64))
     notes = db.Column(db.String(128))

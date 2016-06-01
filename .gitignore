@@ -65,4 +65,4 @@ target/
 upload/
 migrations/
 venv/
-my_config.py
+my_config.*

@@ -61,11 +61,11 @@ def index():
 
         items_count = len(items)
         if items_count > 10:
-            flash(u'查询结果超过10项，只显示部分内容，建议调整关键字')
+            flash(u'查询结果超过10项，建议调整关键字')
         elif items_count == 0:
             flash(u'没有匹配的内容，请更换关键字')
 
-        return render_template('main/index.html', form=form, items=items[:10])
+        return render_template('main/index.html', form=form, items=items)
 
     return render_template('main/index.html', form=form)
 
@@ -79,21 +79,7 @@ def detail():
         return redirect(url_for('.index'))
         
     mate = Material.query.filter_by(id=id).first()
-    if not mate.cate:
-        for i in range(len(mate.code) - 1, 3, -1):
-            code_prefix = mate.code[:i]
-            cate = Category.query.filter_by(prefix=code_prefix).first()
-
-            if cate:
-                mate.cate = cate
-
-                db.session.add(mate)
-                db.session.commit()
-
-                break
-
     attach = MaterialAttach.query.filter_by(mate_id=mate.id).all()
-    print len(attach)
 
     return render_template('main/detail.html', item=mate, attach=attach)
 
@@ -311,4 +297,3 @@ def admin():
             db.session.commit()
 
     return "Ok"
-

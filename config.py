@@ -19,6 +19,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     UPLOAD_FOLDER = os.path.join(basedir, 'user_upload')
+    TMP_FOLDER = os.path.join(basedir, 'tmp')
 
     # FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     # FLASKY_MAIL_SENDER = 'Flasky Admin <flasky@example.com>'
